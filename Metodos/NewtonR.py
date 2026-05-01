@@ -1,11 +1,11 @@
 from sympy import diff, symbols, lambdify
 
 
-def newton_raphson(f_func, f_expr, x_inicial, tol, max_iter=100):
+def newton_raphson(f_func, f_expr, x_inicial, tol, incognita, max_iter=100):
     # f_func: función ejecutable
     # f_expr: expresión simbólica de sympy para derivar
 
-    x_sym = symbols("x")  # Asumimos 'x', podrías pasar la incógnita del conversor
+    x_sym = symbols(incognita)  # Asumimos 'x'
     df_expr = diff(f_expr, x_sym)
     df_func = lambdify(x_sym, df_expr)
 

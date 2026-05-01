@@ -15,7 +15,7 @@ class ConvertirAFuncion:
 
     def solicitar_entrada(self):
         # Solicitamos la función al usuario
-        self.entrada_str = input("Ingresa la función f(x): ")
+        self.entrada_str = input("Ingresa la función f(x) o transformada g(x): ")
 
     def preparar_funciones(self):
 
