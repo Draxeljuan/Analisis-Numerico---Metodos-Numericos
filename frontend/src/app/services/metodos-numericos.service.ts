@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { RespuestaMetodo, RequestNoLineal, RequestLineal, FilaLineal, FilaNoLineal } from '../app/models/metodos.model';
+import { RespuestaMetodo, RequestNoLineal, RequestLineal, FilaLineal, FilaNoLineal } from '../models/metodos.model';
 
 
 @Injectable({

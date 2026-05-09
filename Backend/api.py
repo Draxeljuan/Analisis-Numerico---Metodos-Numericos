@@ -19,7 +19,7 @@ from Metodos.secante import secante
 
 app = FastAPI(title="Metodos Numericos API")
 
-# Habilitar CORS para que tu Angular (puerto 4200) pueda conectar
+# Habilitar CORS para Angular (puerto 4200) pueda conectar
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -125,7 +125,7 @@ def api_falsaposicion(data: RequestNoLineal):
         return {
             "resultado": raiz,
             "total_iteraciones": total_it,
-            "datos_table": historial
+            "datos_tabla": historial
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+/* src/styles.scss — estilos globales */
+ 
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+ 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+ 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #0d0f14;
+  color: #e8ecf4;
+}
+ 
+/* Scrollbar global */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #252b3b; border-radius: 3px; }/* You can add global styles to this file, and also import other style files */

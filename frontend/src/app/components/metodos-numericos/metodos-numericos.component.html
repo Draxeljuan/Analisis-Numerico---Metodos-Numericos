@@ -1,0 +1,270 @@
+<!-- src/app/components/metodos-numericos/metodos-numericos.component.html -->
+<div class="app-shell">
+
+  <!-- ═══════════════════════ SIDEBAR ═══════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">∫</span>
+      <div>
+        <h1 class="brand-title">Métodos</h1>
+        <p class="brand-sub">Numéricos</p>
+      </div>
+    </div>
+
+    <!-- Categoría: No Lineales -->
+    <div class="nav-section">
+      <button
+        class="nav-category"
+        [class.active]="categoriaActiva === 'no-lineal'"
+        (click)="seleccionarCategoria('no-lineal')">
+        <span class="nav-cat-icon">f(x)</span>
+        <span>No Lineales</span>
+      </button>
+      <div class="nav-methods" [class.visible]="categoriaActiva === 'no-lineal'">
+        <button
+          *ngFor="let m of metodosNoLineales"
+          class="nav-method"
+          [class.active]="metodoActivo === m"
+          (click)="seleccionarMetodo(m)">
+          <span class="method-dot"></span>
+          {{ metodos[m].label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Categoría: Lineales -->
+    <div class="nav-section">
+      <button
+        class="nav-category"
+        [class.active]="categoriaActiva === 'lineal'"
+        (click)="seleccionarCategoria('lineal')">
+        <span class="nav-cat-icon">Ax</span>
+        <span>Lineales</span>
+      </button>
+      <div class="nav-methods" [class.visible]="categoriaActiva === 'lineal'">
+        <button
+          *ngFor="let m of metodosLineales"
+          class="nav-method"
+          [class.active]="metodoActivo === m"
+          (click)="seleccionarMetodo(m)">
+          <span class="method-dot"></span>
+          {{ metodos[m].label }}
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════ MAIN ═══════════════════════ -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="page-header">
+      <div class="header-left">
+        <p class="header-cat">{{ categoriaActiva === 'no-lineal' ? 'Ecuaciones No Lineales' : 'Sistemas Lineales' }}</p>
+        <h2 class="header-method">{{ configActual.label }}</h2>
+      </div>
+      <div class="header-badge">
+        {{ categoriaActiva === 'no-lineal' ? 'f(x) = 0' : 'Ax = b' }}
+      </div>
+    </header>
+
+    <!-- ─── FORMULARIO ──────────────────────────────────────── -->
+    <section class="card form-card">
+      <h3 class="card-title">Parámetros de entrada</h3>
+
+      <!-- NO LINEAL -->
+      <ng-container *ngIf="configActual.requiereFuncion">
+        <div class="form-grid">
+          <div class="field full-width">
+            <label class="field-label">f(x) — función</label>
+            <input class="field-input mono" type="text" [(ngModel)]="funcion"
+              placeholder="Ej: x**3 - x - 2" />
+            <span class="field-hint">Usa sintaxis Python: x**2, sin(x), exp(x), log(x)</span>
+          </div>
+
+          <div class="field" *ngIf="configActual.requiereA">
+            <label class="field-label">a (extremo izquierdo)</label>
+            <input class="field-input" type="number" [(ngModel)]="a" />
+          </div>
+
+          <div class="field" *ngIf="configActual.requiereB">
+            <label class="field-label">b (extremo derecho)</label>
+            <input class="field-input" type="number" [(ngModel)]="b" />
+          </div>
+
+          <div class="field" *ngIf="configActual.requiereX0">
+            <label class="field-label">x₀ (punto inicial)</label>
+            <input class="field-input" type="number" [(ngModel)]="x0" />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Tolerancia</label>
+            <input class="field-input mono" type="number" step="0.00001" [(ngModel)]="tol" />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Máx. iteraciones</label>
+            <input class="field-input" type="number" [(ngModel)]="maxIter" />
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- LINEAL -->
+      <ng-container *ngIf="configActual.requiereMatriz">
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label">Tamaño del sistema (n × n)</label>
+            <div class="size-control">
+              <button class="size-btn" (click)="tamanoSistema = tamanoSistema > 2 ? tamanoSistema - 1 : 2; actualizarTamano()">−</button>
+              <span class="size-val">{{ tamanoSistema }}</span>
+              <button class="size-btn" (click)="tamanoSistema = tamanoSistema < 6 ? tamanoSistema + 1 : 6; actualizarTamano()">+</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Tolerancia</label>
+            <input class="field-input mono" type="number" step="0.00001" [(ngModel)]="tol" />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Máx. iteraciones</label>
+            <input class="field-input" type="number" [(ngModel)]="maxIter" />
+          </div>
+        </div>
+
+        <!-- Matriz aumentada [A|b] -->
+        <div class="matrix-section">
+          <p class="matrix-label">Matriz aumentada [A | b]</p>
+          <div class="matrix-grid">
+            <div class="matrix-row" *ngFor="let fila of matrizA; let i = index; trackBy: trackByIndex">
+              <input
+                *ngFor="let _ of fila; let j = index; trackBy: trackByIndex"
+                class="matrix-cell"
+                type="number"
+                [(ngModel)]="matrizA[i][j]"
+                [placeholder]="'a' + (i+1) + (j+1)" />
+              <span class="matrix-sep">|</span>
+              <input
+                class="matrix-cell b-cell"
+                type="number"
+                [(ngModel)]="vectorB[i]"
+                [placeholder]="'b' + (i+1)" />
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Botón resolver -->
+      <div class="form-actions">
+        <button class="btn-resolver" (click)="resolver()" [disabled]="cargando">
+          <span *ngIf="!cargando">Calcular</span>
+          <span *ngIf="cargando" class="spinner">Procesando…</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ─── ERROR ──────────────────────────────────────────── -->
+    <div class="error-banner" *ngIf="error">
+      <span class="error-icon">⚠</span>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- ─── RESULTADOS NO LINEAL ──────────────────────────────── -->
+    <ng-container *ngIf="respuestaNoLineal">
+
+      <!-- Resumen -->
+      <section class="card result-summary">
+        <div class="summary-item accent">
+          <span class="summary-label">Raíz aproximada</span>
+          <span class="summary-value mono">{{ formatNum(respuestaNoLineal.resultado) }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Iteraciones totales</span>
+          <span class="summary-value">{{ respuestaNoLineal.total_iteraciones }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Tolerancia usada</span>
+          <span class="summary-value mono">{{ tol }}</span>
+        </div>
+      </section>
+
+      <!-- Tabla -->
+      <section class="card table-card">
+        <h3 class="card-title">Historial de iteraciones</h3>
+        <div class="table-wrapper">
+          <table class="iter-table">
+            <thead>
+              <tr>
+                <th *ngFor="let col of columnasNoLineal">{{ col }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fila of respuestaNoLineal.datos_tabla; let last = last"
+                [class.last-row]="last">
+                <td *ngFor="let col of columnasNoLineal" class="mono">
+                  {{ formatNum(getFilaValue(fila, col)) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- ─── RESULTADOS LINEAL ──────────────────────────────────── -->
+    <ng-container *ngIf="respuestaLineal">
+
+      <!-- Indicador dominancia diagonal -->
+      <div class="dominance-banner"
+        [class.dominante]="respuestaLineal.es_dominante"
+        [class.no-dominante]="!respuestaLineal.es_dominante">
+        <span class="dom-icon">{{ respuestaLineal.es_dominante ? '✓' : '⚠' }}</span>
+        <div>
+          <strong>{{ respuestaLineal.es_dominante ? 'Matriz diagonalmente dominante' : 'Matriz NO diagonalmente dominante' }}</strong>
+          <p class="dom-desc">
+            {{ respuestaLineal.es_dominante
+              ? 'La convergencia del método está garantizada.'
+              : 'La convergencia no está garantizada. Los resultados pueden ser incorrectos.' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Resumen solución -->
+      <section class="card result-summary">
+        <div class="summary-item accent" *ngFor="let v of variablesLineal; let i = index">
+          <span class="summary-label">{{ v }}</span>
+          <span class="summary-value mono">{{ formatNum(respuestaLineal.solucion?.[i]) }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Iteraciones totales</span>
+          <span class="summary-value">{{ respuestaLineal.total_iteraciones }}</span>
+        </div>
+      </section>
+
+      <!-- Tabla lineal -->
+      <section class="card table-card">
+        <h3 class="card-title">Historial de iteraciones</h3>
+        <div class="table-wrapper">
+          <table class="iter-table">
+            <thead>
+              <tr>
+                <th>Iteración</th>
+                <th *ngFor="let v of variablesLineal">{{ v }}</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let fila of respuestaLineal.datos_tabla; let last = last"
+                [class.last-row]="last">
+                <td class="mono">{{ fila.iteracion }}</td>
+                <td class="mono" *ngFor="let v of fila.valores">{{ formatNum(v) }}</td>
+                <td class="mono error-col">{{ formatNum(fila.error) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </ng-container>
+
+  </main>
+</div>
