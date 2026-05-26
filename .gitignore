@@ -1,3 +1,12 @@
+# Python
+**/venv/
+**/__pycache__/
+*.pyc
+
+# Angular
+**/node_modules/
+**/dist/
+.angular/
 .venv/
 __pycache__/
 *.pyc
